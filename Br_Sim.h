@@ -1,5 +1,5 @@
 int Ntrial, N, Nsim, Neq, Ncell, Nmax, dim, Nneigh, Nmeas, Nhist, Nlevel, Nblock;
-double L, sigma, rho, rc, T, dt;
+double L, sigma, rho, rc, T, dt, mu;
 double *x, *y, *z, *vx, *vy, *vz, *fx, *fy, *fz;
 int *cell_list_index, *hist;
 int **cell_list, **neighbor;
@@ -41,6 +41,8 @@ void print_SF();
 double calculate_pressure();
 
 void md_step();
+
+void bd_step();
 
 void init_cell_list();
 

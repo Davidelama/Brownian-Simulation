@@ -26,15 +26,16 @@ int main() {
   long int ms, msend;
   //close time stuff
   
+  mu=.001; //mobility coefficient
   T = 1.0; //temperature in units of epsilon/kB.
-  dt = 0.0005; //time-step length
+  dt = 0.005; //time-step length
   rho=0.6; //rho=density
   N = 512; //216
   sigma=pow(2,1./6.); //soft diameter
   Nblock=10;
-  Nlevel=5;
+  Nlevel=6;
   Nmeas=rint(pow(Nblock,3));
-  Neq=rint(pow(Nblock,Nlevel));
+  Neq=rint(pow(Nblock,Nlevel-1));
   Nsim=rint(pow(Nblock,Nlevel+1));  //total time has to be Nblock*Nblock^Nlevel
   dim=3;
   
@@ -85,7 +86,11 @@ int main() {
       P=calculate_pressure();
       printf("Ek=%f, U=%f, E=%f, P=%f (stabilization)\n",Ek, U,Ek+U, P);
     }
-    md_step();
+    
+    //md_step();
+    
+    bd_step();
+    
   }
   
   //start of simulation
@@ -117,7 +122,8 @@ int main() {
       printf("%d%%, ETA: %dh:%dm:%ds, Ek=%f, U=%f, E=%f, P=%f \n",per,hr,min,sec,Ek, U,Ek+U, P);
       
     }
-    md_step();
+    //md_step();  //normal newtonian dynamics
+    bd_step();  //brownian dynamics
     block_corr(i, vx_blk, vy_blk, vz_blk, Zx, Zy, Zz, zout);
     block_intg(i, Sumx_blk, Sumy_blk, Sumz_blk, Drx, Dry, Drz, drout);
   }
@@ -355,6 +361,39 @@ void md_step()
 }
 
 /*********************************************************************************************************************************/
+
+void bd_step()
+{
+  double dx,dy,dz,B;
+  int i;
+  
+  B=sqrt(2.0*T*mu*dt);
+  
+  for(i=0; i<N; i++)
+  {
+
+    dx=mu*dt*fx[i]+B*random_mars->gaussian();
+    dy=mu*dt*fy[i]+B*random_mars->gaussian();
+    dz=mu*dt*fz[i]+B*random_mars->gaussian();
+    
+    vx[i]=dx/dt; //at least these velocities kind of make sense
+    vy[i]=dy/dt;
+    vz[i]=dz/dt;
+    
+    x[i]+=dx;
+    y[i]+=dy;
+    z[i]+=dz;
+    
+    x[i]-=L*rint(x[i]/L);
+    y[i]-=L*rint(y[i]/L);
+    z[i]-=L*rint(z[i]/L);
+  }
+  
+  reinit_cell_list();
+  
+  calculate_force();
+ 
+}
 
 double calculate_kin()
 {

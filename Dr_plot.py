@@ -5,7 +5,7 @@ import pandas as pd
 
 
 par=np.genfromtxt("Dr.dat",max_rows=1)
-data=np.genfromtxt("Dr.dat",skip_header=1)#, skip_footer=1
+data=np.genfromtxt("Dr.dat",skip_header=1, skip_footer=1)#
 Nblock=int(par[0])
 Nlevel=int(par[1])
 dt=par[2]
