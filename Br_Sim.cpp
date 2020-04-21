@@ -30,10 +30,10 @@ int main() {
   T = 1.0; //temperature in units of epsilon/kB.
   dt = 0.005; //time-step length
   rho=0.6; //rho=density
-  N = 512; //216
+  N = 64; //216
   sigma=pow(2,1./6.); //soft diameter
   Nblock=10;
-  Nlevel=6;
+  Nlevel=5;
   Nmeas=rint(pow(Nblock,3));
   Neq=rint(pow(Nblock,Nlevel-1));
   Nsim=rint(pow(Nblock,Nlevel+1));  //total time has to be Nblock*Nblock^Nlevel
